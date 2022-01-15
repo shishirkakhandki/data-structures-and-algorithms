@@ -1,0 +1,69 @@
+#include <bits/stdc++.h>
+using namespace std;
+ 
+int solve(vector<string> s, int n, string word1, string word2){
+       
+    unordered_map<string, vector<string>> adj;
+    unordered_map<string, int> um;
+    
+    
+    for(int i = 0; i<n-1; i++){
+        adj[s[i]].push_back(s[i+1]);
+        adj[s[i+1]].push_back(s[i]);
+        um[s[i]] = i;
+    }
+    
+    um[s[n-1]] = n-1;
+    
+    vector<int> visited(n, 0);
+    
+    queue<pair<int, pair<int, string>>> q;
+    
+    for(int i = 0; i<n; i++){
+        if(word1==s[i]){
+            q.push({0, {i, word1}});
+            visited[i] = 1;
+         }
+    }
+    
+    int mIdx = INT_MAX;
+    
+    while(q.size()>0){
+        
+        int dist = q.front().first;
+        pair<int,  string> indexStringPair = q.front().second;
+        string str = indexStringPair.second;
+        int idx = indexStringPair.first;
+        q.pop();
+        
+        if(str==word2){
+            mIdx = min(mIdx, dist);
+        }
+        
+        for(auto it: adj[str]){
+            int _idx = um[it];
+            if(visited[_idx]==0){
+                visited[_idx] = 1;
+                q.push({dist+1,{_idx, it}});
+            }
+        }
+        
+    }
+    
+    if(mIdx==INT_MAX)return -1;
+    else return mIdx;
+    
+   
+}
+
+int main() {
+     vector<string> s{"abc", "def", "ghi", "jkl",
+     "mnop", "abc", "def", "jkl"};
+     string w1 = "abc";
+     string w2 = "jkl";
+   
+    
+    cout<<solve(s, s.size(), w1, w2)<<"\n";
+     
+    return 0;
+}
